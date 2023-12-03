@@ -1,21 +1,16 @@
-# Core Pkg
 import streamlit as st
 import streamlit.components.v1 as stc
 
-
-# Load EDA
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity,linear_kernel
 
 
-# Load Our Dataset
+
 def load_data(data):
 	df = pd.read_csv(data)
 	return df
 
-
-# Fxn
 # Vectorize + Cosine Similarity Matrix
 
 def vectorize_text_to_cosine_mat(data):
@@ -28,7 +23,7 @@ def vectorize_text_to_cosine_mat(data):
 
 
 # Recommendation Sys
-@st.cache
+@st.cache_data
 def get_recommendation(title,cosine_sim_mat,df,num_of_rec=10):
 	# indices of the course
 	course_indices = pd.Series(df.index,index=df['course_title']).drop_duplicates()
@@ -62,7 +57,7 @@ box-shadow:0 0 15px 5px #ccc; background-color: #a8f0c6;
 """
 
 # Search For Course
-@st.cache
+@st.cache_data
 def search_term_if_not_found(term,df):
 	result_df = df[df['course_title'].str.contains(term)]
 	return result_df
@@ -91,6 +86,7 @@ def main():
 			if search_term is not None:
 				try:
 					results = get_recommendation(search_term,cosine_sim_mat,df,num_of_rec)
+					print(results)
 					with st.beta_expander("Results as JSON"):
 						results_json = results.to_dict('index')
 						st.write(results_json)
